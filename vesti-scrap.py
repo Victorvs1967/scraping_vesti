@@ -13,7 +13,7 @@ def scrap(params):
     session = params['session']
 
     parts = urlsplit(url)
-    base = f'{parts.scheme}://{parts.netloc}'
+    base = parts.scheme + '://' + parts.netloc
     path = parts.path
 
     page_urls = deque([url])
@@ -35,7 +35,7 @@ def scrap(params):
                 soup = BeautifulSoup(response.content, 'lxml')
                 container = soup.find_all('div', {'class': 'row'})
         except Exception as e:
-            print(f'Error: {e}')
+            print('Error:', e)
             continue
         
         # links array
@@ -48,7 +48,7 @@ def scrap(params):
                         processed_links.add(link)
                 
         page += 1
-        page_urls.append(f'{base}{path}{page}')
+        page_urls.append(base + path + str(page))
         print('.', end='', flush=True)
 
     print(len(processed_links))
@@ -70,7 +70,7 @@ def scrap(params):
             if not sub_res.ok:
                 print(sub_res.status_code)
         except Exception as e:
-            print(f'\nError: {e}')
+            print('\nError:', e)
 
         sub_soup = BeautifulSoup(sub_res.content, 'lxml')
 
@@ -88,7 +88,7 @@ def scrap(params):
             article_text = article_texts.find_all('p', text=True)
             a_text = ''
             for text in article_text:
-                a_text += f'{text.text} '
+                a_text += text.text + ' '
             data['Article'].append(a_text.strip())
         else:
             data['Article'].append('')
